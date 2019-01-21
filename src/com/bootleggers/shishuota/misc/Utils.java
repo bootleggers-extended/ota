@@ -392,6 +392,24 @@ public class Utils {
         }
     }
 
+    public static String getParsedDateSmall(String dateformat, boolean isShort) {
+        String newDateToFormat = "lorem";
+        if (!"".equals(dateformat)) {
+            try {
+                newDateToFormat = dateformat.substring(4,8);
+                SimpleDateFormat template = new SimpleDateFormat("MMdd");
+                Date parsedDate = template.parse(newDateToFormat);
+                String format = DateFormat.getBestDateTimePattern(Locale.getDefault(), isShort ? "dMM" : "dMMMM");
+                newDateToFormat = DateFormat.format(format, parsedDate).toString();
+            } catch (ParseException e) {
+                // broken parse; fall through and use the raw string
+            }
+            return newDateToFormat;
+        } else {
+            return null;
+        }
+    }
+
     public static long getEpochDate (String date) {
         long dateParsed = 0;
         if (!"".equals(date)) {
@@ -405,4 +423,5 @@ public class Utils {
             return 0;
         }
     }
+
 }

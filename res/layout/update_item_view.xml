@@ -5,16 +5,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="8dp"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     android:nextFocusRight="@+id/update_action"
-    app:cardCornerRadius="0dp"
-    app:contentPadding="16dp">
+    app:cardCornerRadius="@*android:dimen/config_dialogCornerRadius"
+    app:contentPadding="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
+        android:paddingTop="12dp"
         android:weightSum="1">
 
         <LinearLayout
@@ -24,28 +26,61 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/build_version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:alpha="0.87"
-                android:drawablePadding="8dp"
-                android:maxLines="1"
-                android:paddingBottom="8sp"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="16sp"
-                tools:text="BootleggersROM 4.0" />
+                android:id="@+id/update_card_title"
+                android:text="@string/update_title"
+                android:textSize="12dp"
+                android:textColor="@color/theme_accent"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:letterSpacing="0.08"
+                android:paddingLeft="12dp"
+                android:textAllCaps="true"/>
 
             <TextView
                 android:id="@+id/build_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:textSize="14sp"
+                android:textSize="12dp"
+                android:paddingLeft="12dp"
+                android:paddingTop="2dp"
+                android:alpha="0.9"
+                android:letterSpacing="0.08"
+                android:textAllCaps="true"
                 tools:text="29 February 2018" />
+
+            <TextView
+                android:id="@+id/build_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.87"
+                android:paddingLeft="12dp"
+                android:paddingTop="4dp"
+                android:drawablePadding="8dp"
+                android:maxLines="1"
+                android:paddingBottom="8sp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="20sp"
+                tools:text="BootleggersROM 4.0" />
+
+            <TextView
+                android:id="@+id/build_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.87"
+                android:paddingLeft="12dp"
+                android:paddingTop="4dp"
+                android:drawablePadding="8dp"
+                android:paddingBottom="8sp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="14sp" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingLeft="12dp">
 
                 <ProgressBar
                     android:id="@+id/progress_bar"
@@ -53,6 +88,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="4sp"
+                    android:paddingRight="12dp"
                     android:visibility="invisible"
                     tools:progress="65"
                     tools:visibility="visible" />
@@ -65,7 +101,7 @@
                     android:ellipsize="marquee"
                     android:singleLine="true"
                     android:visibility="invisible"
-                    tools:text="162 of 300 MB (3 minutes left) • 65%"
+                    tools:text="162MB of 300 MB (3 minutes left) • 65%"
                     tools:visibility="visible" />
 
                 <TextView
@@ -77,14 +113,41 @@
                     tools:text="300 MB"
                     tools:visibility="invisible" />
             </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <Button
+                    android:id="@+id/update_action"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left|center_vertical"
+                    tools:text="Pause" />
+
+                <Button
+                    android:id="@+id/update_changelog"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left|center_vertical"
+                    android:text="@string/update_button_changelog" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
-        <Button
+<!--        <Button
             android:id="@id/update_action"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
             tools:text="Pause" />
+            android:padding="8dp" /> -->
+
     </LinearLayout>
 </android.support.v7.widget.CardView>

@@ -77,7 +77,7 @@
 
     <string name="snack_update_not_installable">This update can\'t be installed on top of the current build.</string>
 
-    <string name="header_title_text">BootleggersROM\n%1$s</string>
+    <string name="header_title_text">Bootleggers</string>
     <string name="header_android_version">Android <xliff:g id="version" example="7.1.2">%1$s</xliff:g></string>
     <string name="header_last_updates_check">Last checked: <xliff:g id="date" example="1 January 1970">%1$s</xliff:g> (<xliff:g id="time" example="01:23">%2$s</xliff:g>)</string>
 
@@ -139,4 +139,16 @@
     <string name="new_updates_channel_title">New updates</string>
     <string name="ongoing_channel_title">Ongoing downloads</string>
     <string name="update_failed_channel_title">Update failed</string>
+
+    <!-- New Headers info -->
+    <string name="header_updates_no_update">You\'re up to date</string>
+    <string name="header_updates_new_build">There\'s a new update</string>
+
+    <!-- Strings for update card -->
+    <string name="update_title">New update</string>
+    <string name="update_summary" translatable="false">%1$s %2$s</string>
+    <string name="update_button_changelog">Changelog</string>
+    <string name="update_new_release">A new update came for your %s!</string>
+    <string name="update_new_release_small">Check the new improvements and changes that this build brings or download it right now.</string>
+    <string name="update_new_release_big">Check the new stuff that\'s waiting for you or download this new release right now.</string>
 </resources>

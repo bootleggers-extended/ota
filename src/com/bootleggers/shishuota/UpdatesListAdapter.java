@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.BatteryManager;
 import android.os.PowerManager;
+import android.os.SystemProperties;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -88,6 +89,7 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
 
         private TextView mBuildDate;
         private TextView mBuildVersion;
+        private TextView mBuildSummary;
         private TextView mBuildSize;
 
         private ProgressBar mProgressBar;
@@ -99,6 +101,7 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
 
             mBuildDate = (TextView) view.findViewById(R.id.build_date);
             mBuildVersion = (TextView) view.findViewById(R.id.build_version);
+            mBuildSummary = (TextView) view.findViewById(R.id.build_summary);
             mBuildSize = (TextView) view.findViewById(R.id.build_size);
 
             mProgressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
@@ -133,7 +136,7 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
         if (mUpdaterController.isDownloading(downloadId)) {
             canDelete = true;
             String downloaded = StringGenerator.bytesToMegabytes(mActivity,
-                    update.getFile().length());
+                    update.getFile().length()) + " MB";
             String total = Formatter.formatShortFileSize(mActivity, update.getFileSize());
             String percentage = NumberFormat.getPercentInstance().format(
                     update.getProgress() / 100.f);
@@ -150,6 +153,8 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
             setButtonAction(viewHolder.mAction, Action.PAUSE, downloadId, true);
             viewHolder.mProgressBar.setIndeterminate(update.getStatus() == UpdateStatus.STARTING);
             viewHolder.mProgressBar.setProgress(update.getProgress());
+            viewHolder.mBuildSummary.setVisibility(View.GONE);
+            viewHolder.mBuildVersion.setVisibility(View.GONE);
         } else if (mUpdaterController.isInstallingUpdate(downloadId)) {
             setButtonAction(viewHolder.mAction, Action.CANCEL_INSTALLATION, downloadId, true);
             boolean notAB = !mUpdaterController.isInstallingABUpdate();
@@ -182,6 +187,8 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
         viewHolder.mProgressBar.setVisibility(View.VISIBLE);
         viewHolder.mProgressText.setVisibility(View.VISIBLE);
         viewHolder.mBuildSize.setVisibility(View.INVISIBLE);
+        viewHolder.mBuildVersion.setVisibility(View.GONE);
+        viewHolder.mBuildSummary.setVisibility(View.GONE);
     }
 
     private void handleNotActiveStatus(ViewHolder viewHolder, UpdateInfo update) {
@@ -211,6 +218,17 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
         viewHolder.mProgressBar.setVisibility(View.INVISIBLE);
         viewHolder.mProgressText.setVisibility(View.INVISIBLE);
         viewHolder.mBuildSize.setVisibility(View.VISIBLE);
+        viewHolder.mBuildVersion.setVisibility(View.GONE);
+        viewHolder.mBuildSummary.setText(mActivity.getString(
+                        R.string.update_summary, mActivity.getString(
+                        R.string.update_new_release, SystemProperties.get(Constants.PROP_DEVICE)), mActivity.getString(
+                        R.string.update_new_release_small)));
+        /**if (Utils.isBigRelease()) {
+            viewHolder.mBuildVersion.setVisibility(View.VISIBLE);
+            viewHolder.mBuildVersion.setText(Utils.getReleaseVersion(update.getName()));
+        } else {
+            viewHolder.mBuildVersion.setVisibility(View.GONE)
+        }**/
     }
 
     @Override
@@ -246,7 +264,7 @@ public class UpdatesListAdapter extends RecyclerView.Adapter<UpdatesListAdapter.
                 throw new RuntimeException("Unknown update status");
         }
 
-        String buildDate = Utils.getParsedDate(update.getBuildDate(), false);
+        String buildDate = Utils.getParsedDateSmall(update.getBuildDate(), false);
         //String buildVersion = mActivity.getString(R.string.list_build_version,
         //        update.getVersion());
         viewHolder.mBuildDate.setText(buildDate);

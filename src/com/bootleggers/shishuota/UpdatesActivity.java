@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemProperties;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
@@ -114,18 +115,11 @@ public class UpdatesActivity extends UpdatesListActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         TextView headerTitle = (TextView) findViewById(R.id.header_title);
-        headerTitle.setText(getString(R.string.header_title_text,
-                BuildInfoUtils.getBuildVersion()));
+        headerTitle.setText(getString(R.string.header_title_text));
 
-        updateLastCheckedString();
-
-        TextView headerBuildVersion = (TextView) findViewById(R.id.header_build_version);
-        headerBuildVersion.setText(
-                getString(R.string.header_android_version, Build.PROP_BUILD_VERSION_NUMBERE));
-
-        TextView headerBuildDate = (TextView) findViewById(R.id.header_build_date);
-        headerBuildDate.setText(StringGenerator.getDateLocalizedUTC(this,
-                DateFormat.LONG, BuildInfoUtils.getBuildDateTimestamp()));
+        TextView headerVersion = (TextView) findViewById(R.id.header_version);
+        headerVersion.setText(SystemProperties.get(Constants.PROP_BUILD_VERSION_NUMBER) + " | " +
+                    SystemProperties.get(Constants.PROP_DEVICE));
 
         // Switch between header title and appbar title minimizing overlaps
         final CollapsingToolbarLayout collapsingToolbar =
@@ -259,13 +253,19 @@ public class UpdatesActivity extends UpdatesListActivity {
         if (sortedUpdates.isEmpty()) {
             findViewById(R.id.no_new_updates_view).setVisibility(View.VISIBLE);
             findViewById(R.id.recycler_view).setVisibility(View.GONE);
+            ((TextView) findViewById(R.id.header_update_status)).setText(R.string.header_updates_no_update);
+            findViewById(R.id.header_update_release_date).setVisibility(View.GONE);
         } else {
             findViewById(R.id.no_new_updates_view).setVisibility(View.GONE);
             findViewById(R.id.recycler_view).setVisibility(View.VISIBLE);
             sortedUpdates.sort((u1, u2) -> Long.compare(Utils.getEpochDate(u2.getBuildDate()), Utils.getEpochDate(u1.getBuildDate())));
             for (UpdateInfo update : sortedUpdates) {
                 updateIds.add(update.getDownloadId());
+                ((TextView) findViewById(R.id.header_update_release_date)).setText("(" + Utils.getParsedDate(update.getBuildDate(), false) + ")");
             }
+            ((TextView) findViewById(R.id.header_update_status)).setText(R.string.header_updates_new_build);
+            findViewById(R.id.header_update_release_date).setVisibility(View.VISIBLE);
+            /* Example till this is working */
             mAdapter.setData(updateIds);
             mAdapter.notifyDataSetChanged();
         }
@@ -291,7 +291,6 @@ public class UpdatesActivity extends UpdatesListActivity {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             long millis = System.currentTimeMillis();
             preferences.edit().putLong(Constants.PREF_LAST_UPDATE_CHECK, millis).apply();
-            updateLastCheckedString();
             if (json.exists() && preferences.getBoolean(Constants.PREF_AUTO_UPDATES_CHECK, true) &&
                     Utils.checkForNewUpdates(json, jsonNew)) {
                 UpdatesCheckReceiver.updateRepeatingUpdatesCheck(this);
@@ -355,17 +354,6 @@ public class UpdatesActivity extends UpdatesListActivity {
         downloadClient.start();
     }
 
-    private void updateLastCheckedString() {
-        final SharedPreferences preferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
-        long lastCheck = preferences.getLong(Constants.PREF_LAST_UPDATE_CHECK, -1) / 1000;
-        String lastCheckString = getString(R.string.header_last_updates_check,
-                StringGenerator.getDateLocalized(this, DateFormat.LONG, lastCheck),
-                StringGenerator.getTimeLocalized(this, lastCheck));
-        TextView headerLastCheck = (TextView) findViewById(R.id.header_last_check);
-        headerLastCheck.setText(lastCheckString);
-    }
-
     private void handleDownloadStatusChange(String downloadId) {
         UpdateInfo update = mUpdaterService.getUpdaterController().getUpdate(downloadId);
         switch (update.getStatus()) {
@@ -401,6 +389,19 @@ public class UpdatesActivity extends UpdatesListActivity {
         if (mRefreshIconView != null) {
             mRefreshAnimation.setRepeatCount(0);
             mRefreshIconView.setEnabled(true);
+        }
+    }
+
+    public void updateheaderInfoString(boolean newUpdateInfo) {
+        TextView headerUpdateStatus = (TextView) findViewById(R.id.header_update_status);
+        TextView headerUpdateDate = (TextView) findViewById(R.id.header_update_release_date);
+        if (newUpdateInfo) {
+            headerUpdateStatus.setText(R.string.header_updates_new_build);
+            headerUpdateDate.setVisibility(View.VISIBLE);
+            headerUpdateDate.setText("DateGoesHere");
+        } else {
+            headerUpdateStatus.setText(R.string.header_updates_no_update);
+            headerUpdateDate.setVisibility(View.GONE);
         }
     }
 
