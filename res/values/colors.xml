@@ -7,4 +7,7 @@
     <color name="inverted">#212121</color>
     <color name="update_background">#fafafa</color>
     <color name="ic_background">#333333</color>
+    <color name="header_title_text_color">#de000000</color>
+    <color name="header_title_version_text_color">@color/header_title_text_color</color>
+    <color name="header_title_update_info_text_color">@color/header_title_text_color</color>
 </resources>
