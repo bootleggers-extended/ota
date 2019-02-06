@@ -38,9 +38,9 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
         public static final String COLUMN_NAME_STATUS = "status";
         public static final String COLUMN_NAME_PATH = "path";
         public static final String COLUMN_NAME_DOWNLOAD_ID = "download_id";
-        public static final String COLUMN_NAME_TIMESTAMP = "timestamp";
-        public static final String COLUMN_NAME_TYPE = "type";
-        public static final String COLUMN_NAME_VERSION = "version";
+        public static final String COLUMN_NAME_BUILD_DATE = "buildate";
+        public static final String COLUMN_NAME_DOWNLOAD_MIRROR = "dlmirror";
+        public static final String COLUMN_NAME_XDA = "xdathread";
         public static final String COLUMN_NAME_SIZE = "size";
     }
 
@@ -50,9 +50,9 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
                     UpdateEntry.COLUMN_NAME_STATUS + " INTEGER," +
                     UpdateEntry.COLUMN_NAME_PATH + " TEXT," +
                     UpdateEntry.COLUMN_NAME_DOWNLOAD_ID + " TEXT NOT NULL UNIQUE," +
-                    UpdateEntry.COLUMN_NAME_TIMESTAMP + " INTEGER," +
-                    UpdateEntry.COLUMN_NAME_TYPE + " TEXT," +
-                    UpdateEntry.COLUMN_NAME_VERSION + " TEXT," +
+                    UpdateEntry.COLUMN_NAME_BUILD_DATE + " TEXT," +
+                    UpdateEntry.COLUMN_NAME_DOWNLOAD_MIRROR + " TEXT," +
+                    UpdateEntry.COLUMN_NAME_XDA + " TEXT," +
                     UpdateEntry.COLUMN_NAME_SIZE + " INTEGER)";
 
     private static final String SQL_DELETE_ENTRIES =
@@ -81,9 +81,9 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
         values.put(UpdateEntry.COLUMN_NAME_STATUS, update.getPersistentStatus());
         values.put(UpdateEntry.COLUMN_NAME_PATH, update.getFile().getAbsolutePath());
         values.put(UpdateEntry.COLUMN_NAME_DOWNLOAD_ID, update.getDownloadId());
-        values.put(UpdateEntry.COLUMN_NAME_TIMESTAMP, update.getTimestamp());
-        values.put(UpdateEntry.COLUMN_NAME_TYPE, update.getType());
-        values.put(UpdateEntry.COLUMN_NAME_VERSION, update.getVersion());
+        values.put(UpdateEntry.COLUMN_NAME_BUILD_DATE, update.getBuildDate());
+        values.put(UpdateEntry.COLUMN_NAME_DOWNLOAD_MIRROR, update.getDownloadMirror());
+        values.put(UpdateEntry.COLUMN_NAME_XDA, update.getXdaThread());
         values.put(UpdateEntry.COLUMN_NAME_SIZE, update.getFileSize());
         return db.insert(UpdateEntry.TABLE_NAME, null, values);
     }
@@ -94,9 +94,9 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
         values.put(UpdateEntry.COLUMN_NAME_STATUS, update.getPersistentStatus());
         values.put(UpdateEntry.COLUMN_NAME_PATH, update.getFile().getAbsolutePath());
         values.put(UpdateEntry.COLUMN_NAME_DOWNLOAD_ID, update.getDownloadId());
-        values.put(UpdateEntry.COLUMN_NAME_TIMESTAMP, update.getTimestamp());
-        values.put(UpdateEntry.COLUMN_NAME_TYPE, update.getType());
-        values.put(UpdateEntry.COLUMN_NAME_VERSION, update.getVersion());
+        values.put(UpdateEntry.COLUMN_NAME_BUILD_DATE, update.getBuildDate());
+        values.put(UpdateEntry.COLUMN_NAME_DOWNLOAD_MIRROR, update.getDownloadMirror());
+        values.put(UpdateEntry.COLUMN_NAME_XDA, update.getXdaThread());
         values.put(UpdateEntry.COLUMN_NAME_SIZE, update.getFileSize());
         return db.insertWithOnConflict(UpdateEntry.TABLE_NAME, null, values, conflictAlgorithm);
     }
@@ -158,13 +158,13 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
         String[] projection = {
                 UpdateEntry.COLUMN_NAME_PATH,
                 UpdateEntry.COLUMN_NAME_DOWNLOAD_ID,
-                UpdateEntry.COLUMN_NAME_TIMESTAMP,
-                UpdateEntry.COLUMN_NAME_TYPE,
-                UpdateEntry.COLUMN_NAME_VERSION,
+                UpdateEntry.COLUMN_NAME_BUILD_DATE,
+                UpdateEntry.COLUMN_NAME_DOWNLOAD_MIRROR,
+                UpdateEntry.COLUMN_NAME_XDA,
                 UpdateEntry.COLUMN_NAME_STATUS,
                 UpdateEntry.COLUMN_NAME_SIZE,
         };
-        String sort = UpdateEntry.COLUMN_NAME_TIMESTAMP + " DESC";
+        String sort = UpdateEntry.COLUMN_NAME_BUILD_DATE + " DESC";
         Cursor cursor = db.query(UpdateEntry.TABLE_NAME, projection, selection, selectionArgs,
                 null, null, sort);
         List<Update> updates = new ArrayList<>();
@@ -176,12 +176,12 @@ public class UpdatesDbHelper extends SQLiteOpenHelper {
                 update.setName(update.getFile().getName());
                 index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_DOWNLOAD_ID);
                 update.setDownloadId(cursor.getString(index));
-                index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_TIMESTAMP);
-                update.setTimestamp(cursor.getLong(index));
-                index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_TYPE);
-                update.setType(cursor.getString(index));
-                index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_VERSION);
-                update.setVersion(cursor.getString(index));
+                index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_BUILD_DATE);
+                update.setBuildDate(cursor.getString(index));
+                index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_DOWNLOAD_MIRROR);
+                update.setDownloadMirror(cursor.getString(index));
+                index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_XDA);
+                update.setXdaThread(cursor.getString(index));
                 index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_STATUS);
                 update.setPersistentStatus(cursor.getInt(index));
                 index = cursor.getColumnIndex(UpdateEntry.COLUMN_NAME_SIZE);

@@ -18,11 +18,11 @@ package com.bootleggers.shishuota.model;
 public class UpdateBase implements UpdateBaseInfo {
 
     private String mName;
-    private String mDownloadUrl;
     private String mDownloadId;
-    private long mTimestamp;
-    private String mType;
-    private String mVersion;
+    private String mDownloadUrl;
+    private String mDownloadMirror;
+    private String mBuildDate;
+    private String mXdaThread;
     private long mFileSize;
 
     public UpdateBase() {
@@ -30,11 +30,11 @@ public class UpdateBase implements UpdateBaseInfo {
 
     public UpdateBase(UpdateBaseInfo update) {
         mName = update.getName();
-        mDownloadUrl = update.getDownloadUrl();
         mDownloadId = update.getDownloadId();
-        mTimestamp = update.getTimestamp();
-        mType = update.getType();
-        mVersion = update.getVersion();
+        mDownloadUrl = update.getDownloadUrl();
+        mDownloadMirror = update.getDownloadMirror();
+        mBuildDate = update.getBuildDate();
+        mXdaThread = update.getXdaThread();
         mFileSize = update.getFileSize();
     }
 
@@ -56,31 +56,32 @@ public class UpdateBase implements UpdateBaseInfo {
         mDownloadId = downloadId;
     }
 
-    @Override
-    public long getTimestamp() {
-        return mTimestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        mTimestamp = timestamp;
-    }
 
     @Override
-    public String getType() {
-        return mType;
+    public String getDownloadMirror() {
+        return mDownloadMirror;
     }
 
-    public void setType(String type) {
-        mType = type;
+    public void setDownloadMirror(String downloadMirror) {
+        mDownloadMirror = downloadMirror;
     }
 
     @Override
-    public String getVersion() {
-        return mVersion;
+    public String getBuildDate() {
+        return mBuildDate;
     }
 
-    public void setVersion(String version) {
-        mVersion = version;
+    public void setBuildDate(String buildate) {
+        mBuildDate = buildate;
+    }
+
+    @Override
+    public String getXdaThread() {
+        return mXdaThread;
+    }
+
+    public void setXdaThread(String xdathread) {
+        mXdaThread = xdathread;
     }
 
     @Override

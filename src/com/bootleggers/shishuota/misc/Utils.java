@@ -27,6 +27,7 @@ import android.os.Environment;
 import android.os.SystemProperties;
 import android.os.storage.StorageManager;
 import android.preference.PreferenceManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -44,7 +45,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -83,24 +87,27 @@ public class Utils {
     // used to initialize UpdateInfo objects
     private static UpdateInfo parseJsonUpdate(JSONObject object) throws JSONException {
         Update update = new Update();
-        update.setTimestamp(object.getLong("datetime"));
         update.setName(object.getString("filename"));
         update.setDownloadId(object.getString("id"));
-        update.setType(object.getString("romtype"));
-        update.setFileSize(object.getLong("size"));
-        update.setDownloadUrl(object.getString("url"));
-        update.setVersion(object.getString("version"));
+        update.setBuildDate(object.getString("buildate"));
+        update.setDownloadMirror(object.getString("mirrorlink"));
+        update.setFileSize(object.getLong("buildsize"));
+        update.setDownloadUrl(object.getString("download"));
+        update.setXdaThread(object.getString("xdathread"));
         return update;
     }
 
     public static boolean isCompatible(UpdateBaseInfo update) {
         if (!SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) &&
-                update.getTimestamp() <= SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) {
-            Log.d(TAG, update.getName() + " is older than/equal to the current build");
+                Utils.getEpochDate(update.getBuildDate()) <= SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) {
+            Log.d(TAG, update.getName() + " is older than/equal to the current build. The date from the build is " + 
+                Utils.getEpochDate(update.getBuildDate().toString()));
             return false;
         }
-        if (!update.getType().equalsIgnoreCase(SystemProperties.get(Constants.PROP_RELEASE_TYPE))) {
-            Log.d(TAG, update.getName() + " has type " + update.getType());
+        int updNameLength = update.getName().length() - 4;
+        String updateNewName = update.getName().substring(0, updNameLength);
+        if (updateNewName.equalsIgnoreCase(SystemProperties.get(Constants.PROP_BUILD_VERSION))) {
+            Log.d(TAG, SystemProperties.get(Constants.PROP_BUILD_VERSION) + " has type " + updateNewName);
             return false;
         }
         return true;
@@ -108,9 +115,9 @@ public class Utils {
 
     public static boolean canInstall(UpdateBaseInfo update) {
         return (SystemProperties.getBoolean(Constants.PROP_UPDATER_ALLOW_DOWNGRADING, false) ||
-                update.getTimestamp() > SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0)) &&
+                Utils.getEpochDate(update.getBuildDate()) > SystemProperties.getLong(Constants.PROP_BUILD_DATE, 0));/** &&
                 update.getVersion().equalsIgnoreCase(
-                        SystemProperties.get(Constants.PROP_BUILD_VERSION));
+                        SystemProperties.get(Constants.PROP_BUILD_VERSION)**/
     }
 
     public static List<UpdateInfo> parseJson(File file, boolean compatibleOnly)
@@ -126,22 +133,23 @@ public class Utils {
 
         JSONObject obj = new JSONObject(json);
         String device = SystemProperties.get(Constants.PROP_DEVICE);
-        JSONArray updatesList = obj.getJSONArray(device);
-        for (int i = 0; i < updatesList.length(); i++) {
-            if (updatesList.isNull(i)) {
-                continue;
-            }
+        JSONObject updatesList = obj.getJSONObject(device);
+        // Commented out because we don't want to list all the builds.
+        //for (int i = 0; i < updatesList.length(); i++) {
+        //    if (updatesList.isNull(i)) {
+        //        continue;
+        //    }
             try {
-                UpdateInfo update = parseJsonUpdate(updatesList.getJSONObject(i));
+                UpdateInfo update = parseJsonUpdate(updatesList);
                 if (!compatibleOnly || isCompatible(update)) {
                     updates.add(update);
                 } else {
                     Log.d(TAG, "Ignoring incompatible update " + update.getName());
                 }
             } catch (JSONException e) {
-                Log.e(TAG, "Could not parse update object, index=" + i, e);
+                Log.e(TAG, "Could not parse update object, " + updatesList.toString(), e);
             }
-        }
+        //}
 
         return updates;
     }
@@ -366,5 +374,35 @@ public class Utils {
     public static boolean isEncrypted(Context context, File file) {
         StorageManager sm = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
         return sm.isEncrypted(file);
+    }
+
+    public static String getParsedDate(String dateformat, boolean isShort) {
+        if (!"".equals(dateformat)) {
+            try {
+                SimpleDateFormat template = new SimpleDateFormat("yyyyMMdd");
+                Date parsedDate = template.parse(dateformat);
+                String format = DateFormat.getBestDateTimePattern(Locale.getDefault(), isShort ? "dMMyyyy" : "dMMMMyyyy");
+                dateformat = DateFormat.format(format, parsedDate).toString();
+            } catch (ParseException e) {
+                // broken parse; fall through and use the raw string
+            }
+            return dateformat;
+        } else {
+            return null;
+        }
+    }
+
+    public static long getEpochDate (String date) {
+        long dateParsed = 0;
+        if (!"".equals(date)) {
+            try {
+                dateParsed = new SimpleDateFormat("yyyyMMdd-HHmmss").parse(date).getTime() / 1000;
+            } catch (ParseException e) {
+                // broken parse; fall through and use the raw string
+            }
+            return dateParsed;
+        } else {
+            return 0;
+        }
     }
 }

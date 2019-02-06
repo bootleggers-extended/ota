@@ -210,11 +210,10 @@ public class UpdatesCheckReceiver extends BroadcastReceiver {
 
         long buildTimestamp = 0;
         for (UpdateInfo update : updates) {
-            if (update.getTimestamp() > buildTimestamp) {
-                buildTimestamp = update.getTimestamp();
+            if (Utils.getEpochDate(update.getBuildDate()) > buildTimestamp) {
+                buildTimestamp = Utils.getEpochDate(update.getBuildDate());
             }
         }
-        buildTimestamp *= 1000;
 
         Calendar c = Calendar.getInstance();
         long now = c.getTimeInMillis();
@@ -228,7 +227,6 @@ public class UpdatesCheckReceiver extends BroadcastReceiver {
         if (c.getTimeInMillis() < now) {
             millisToNextRelease += AlarmManager.INTERVAL_DAY;
         }
-
         return millisToNextRelease;
     }
 

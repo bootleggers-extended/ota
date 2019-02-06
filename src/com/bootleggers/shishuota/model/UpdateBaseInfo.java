@@ -18,15 +18,15 @@ package com.bootleggers.shishuota.model;
 public interface UpdateBaseInfo {
     String getName();
 
-    String getDownloadId();
+    String getDownloadMirror();
 
-    long getTimestamp();
+    String getBuildDate();
 
-    String getType();
-
-    String getVersion();
+    String getXdaThread();
 
     String getDownloadUrl();
+
+    String getDownloadId();
 
     long getFileSize();
 }

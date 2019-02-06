@@ -121,7 +121,7 @@ public class UpdatesActivity extends UpdatesListActivity {
 
         TextView headerBuildVersion = (TextView) findViewById(R.id.header_build_version);
         headerBuildVersion.setText(
-                getString(R.string.header_android_version, Build.VERSION.RELEASE));
+                getString(R.string.header_android_version, Build.PROP_BUILD_VERSION_NUMBERE));
 
         TextView headerBuildDate = (TextView) findViewById(R.id.header_build_date);
         headerBuildDate.setText(StringGenerator.getDateLocalizedUTC(this,
@@ -262,7 +262,7 @@ public class UpdatesActivity extends UpdatesListActivity {
         } else {
             findViewById(R.id.no_new_updates_view).setVisibility(View.GONE);
             findViewById(R.id.recycler_view).setVisibility(View.VISIBLE);
-            sortedUpdates.sort((u1, u2) -> Long.compare(u2.getTimestamp(), u1.getTimestamp()));
+            sortedUpdates.sort((u1, u2) -> Long.compare(Utils.getEpochDate(u2.getBuildDate()), Utils.getEpochDate(u1.getBuildDate())));
             for (UpdateInfo update : sortedUpdates) {
                 updateIds.add(update.getDownloadId());
             }
